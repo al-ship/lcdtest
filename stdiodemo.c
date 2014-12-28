@@ -50,7 +50,7 @@ delay_1s(void)
 int
 main(void)
 {
-  uint8_t i;
+  uint8_t i, c = 0;
   char buf[20], s[20];
 
   ioinit();
@@ -71,22 +71,33 @@ main(void)
       switch (tolower(buf[0]))
 	{
 	default:
-	  printf("Unknown command: %s\n", buf);
+	  //printf("Unknown command: %s\n", buf);
+	  {
+          char cs[3];
+	  c++;
+	  itoa(c, cs, 16);
+//	  cs[3] = c++; 
+//	  cs[5] = 0;
+	  s[0] = c;
+	  s[1] = 0;
+          fprintf(&lcd_str, "got-%s:%s\n", cs, s);
+	  printf("ok: %s:%s\n", cs, s);
+	  }
 	  break;
 
-/*	case 's':
+	case 's':
 	   if (sscanf(buf, "%*s %s", s) > 0)
 	    {
-	      uint8_t ch = atoi(s);
-	      fprintf(&lcd_str, "Got %d\n", (char)ch);
-	      printf("OK\n");
+	      s[0] = atoi(s);
+	      fprintf(&lcd_str, "Got %s\n", s);
+	      printf("%d OK\n", s[0]);
 	    }
 	  else
 	    {
 	      printf("sscanf() failed\n");
 	    }
 	  break;
-*/
+
 	case 'l':
 	  if (sscanf(buf, "%*s %s", s) > 0)
 	    {
