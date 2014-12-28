@@ -1,3 +1,8 @@
+*.srec
+*.hex
+*.bin
+*.elf
+*.o
 *.lst
 *.o.d
 *.eep

@@ -16,7 +16,7 @@
 #include <ctype.h>
 #include <stdint.h>
 #include <stdio.h>
-
+#include <stdlib.h>
 #include <avr/io.h>
 #include <avr/pgmspace.h>
 
@@ -74,6 +74,19 @@ main(void)
 	  printf("Unknown command: %s\n", buf);
 	  break;
 
+/*	case 's':
+	   if (sscanf(buf, "%*s %s", s) > 0)
+	    {
+	      uint8_t ch = atoi(s);
+	      fprintf(&lcd_str, "Got %d\n", (char)ch);
+	      printf("OK\n");
+	    }
+	  else
+	    {
+	      printf("sscanf() failed\n");
+	    }
+	  break;
+*/
 	case 'l':
 	  if (sscanf(buf, "%*s %s", s) > 0)
 	    {
