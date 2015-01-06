@@ -1,105 +1,61 @@
-/*
- * ----------------------------------------------------------------------------
- * "THE BEER-WARE LICENSE" (Revision 42):
- * <joerg@FreeBSD.ORG> wrote this file.  As long as you retain this notice you
- * can do whatever you want with this stuff. If we meet some day, and you think
- * this stuff is worth it, you can buy me a beer in return.        Joerg Wunsch
- * ----------------------------------------------------------------------------
- *
- * HD44780 LCD display driver
- *
- * $Id: hd44780.h 2002 2009-06-25 20:21:16Z joerg_wunsch $
- */
+/*****************************************************************************
+Title  :   HD44780 Library
+Author :   SA Development
+Version:   1.11
+*****************************************************************************/
 
-/*
- * Send byte b to the LCD.  rs is the RS signal (register select), 0
- * selects instruction register, 1 selects the data register.
- */
-void	hd44780_outbyte(uint8_t b, uint8_t rs);
+#ifndef HD44780_H
+#define HD44780_H
 
-/*
- * Read one byte from the LCD controller.  rs is the RS signal, 0
- * selects busy flag (bit 7) and address counter, 1 selects the data
- * register.
- */
-uint8_t	hd44780_inbyte(uint8_t rs);
+#include "hd44780_settings.h"
+#include "inttypes.h"
 
-/*
- * Wait for the busy flag to clear.
- */
-void	hd44780_wait_ready(bool islong);
+//LCD Constants for HD44780
+#define LCD_CLR                 0    // DB0: clear display
 
-/*
- * Initialize the LCD controller hardware.
- */
-void	hd44780_init(void);
+#define LCD_HOME                1    // DB1: return to home position
 
-/*
- * Prepare the LCD controller pins for powerdown.
- */
-void	hd44780_powerdown(void);
+#define LCD_ENTRY_MODE          2    // DB2: set entry mode
+#define LCD_ENTRY_INC           1    // DB1: 1=increment, 0=decrement
+#define LCD_ENTRY_SHIFT         0    // DB0: 1=display shift on
 
+#define LCD_DISPLAYMODE         3    // DB3: turn lcd/cursor on
+#define LCD_DISPLAYMODE_ON      2    // DB2: turn display on
+#define LCD_DISPLAYMODE_CURSOR  1    // DB1: turn cursor on
+#define LCD_DISPLAYMODE_BLINK   0    // DB0: blinking cursor
 
-/* Send a command to the LCD controller. */
-#define hd44780_outcmd(n)	hd44780_outbyte((n), 0)
+#define LCD_MOVE                4    // DB4: move cursor/display
+#define LCD_MOVE_DISP           3    // DB3: move display (0-> cursor)
+#define LCD_MOVE_RIGHT          2    // DB2: move right (0-> left)
 
-/* Send a data byte to the LCD controller. */
-#define hd44780_outdata(n)	hd44780_outbyte((n), 1)
+#define LCD_FUNCTION            5    // DB5: function set
+#define LCD_FUNCTION_8BIT       4    // DB4: set 8BIT mode (0->4BIT mode)
+#define LCD_FUNCTION_2LINES     3    // DB3: two lines (0->one line)
+#define LCD_FUNCTION_10DOTS     2    // DB2: 5x10 font (0->5x7 font)
 
-/* Read the address counter and busy flag from the LCD. */
-#define hd44780_incmd()		hd44780_inbyte(0)
+#define LCD_CGRAM               6    // DB6: set CG RAM address
+#define LCD_DDRAM               7    // DB7: set DD RAM address
 
-/* Read the current data byte from the LCD. */
-#define hd44780_indata()	hd44780_inbyte(1)
+#define LCD_BUSY                7    // DB7: LCD is busy
 
 
-/* Clear LCD display command. */
-#define HD44780_CLR \
-	0x01
+void lcd_init();
+void lcd_command(uint8_t cmd);
 
-/* Home cursor command. */
-#define HD44780_HOME \
-	0x02
+void lcd_clrscr();
+void lcd_home();
+void lcd_goto(uint8_t pos);
 
-/*
- * Select the entry mode.  inc determines whether the address counter
- * auto-increments, shift selects an automatic display shift.
- */
-#define HD44780_ENTMODE(inc, shift) \
-	(0x04 | ((inc)? 0x02: 0) | ((shift)? 1: 0))
+#if RW_LINE_IMPLEMENTED==1
+uint8_t lcd_getc();
+#endif
 
-/*
- * Selects disp[lay] on/off, cursor on/off, cursor blink[ing]
- * on/off.
- */
-#define HD44780_DISPCTL(disp, cursor, blink) \
-	(0x08 | ((disp)? 0x04: 0) | ((cursor)? 0x02: 0) | ((blink)? 1: 0))
+void lcd_putc(char c);
+void lcd_puts(const char *s);
+void lcd_puts_P(const char *progmem_s);
+#if (LCD_DISPLAYS>1)
+void lcd_use_display(int ADisplay);
+#endif
 
-/*
- * With shift = 1, shift display right or left.
- * With shift = 0, move cursor right or left.
- */
-#define HD44780_SHIFT(shift, right) \
-	(0x10 | ((shift)? 0x08: 0) | ((right)? 0x04: 0))
-
-/*
- * Function set.  if8bit selects an 8-bit data path, twoline arranges
- * for a two-line display, font5x10 selects the 5x10 dot font (5x8
- * dots if clear).
- */
-#define HD44780_FNSET(if8bit, twoline, font5x10) \
-	(0x20 | ((if8bit)? 0x10: 0) | ((twoline)? 0x08: 0) | \
-		((font5x10)? 0x04: 0))
-
-/*
- * Set the next character generator address to addr.
- */
-#define HD44780_CGADDR(addr) \
-	(0x40 | ((addr) & 0x3f))
-
-/*
- * Set the next display address to addr.
- */
-#define HD44780_DDADDR(addr) \
-	(0x80 | ((addr) & 0x7f))
+#endif
 

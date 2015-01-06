@@ -72,7 +72,7 @@ FORMAT = ihex
 
 
 # Target file name (without extension).
-TARGET = stdiodemo
+TARGET = lcdtest
 
 
 # Object files directory
@@ -80,7 +80,7 @@ OBJDIR = .
 
 
 # List C source files here. (C dependencies are automatically generated.)
-SRC = $(TARGET).c hd44780.c lcd.c uart.c
+SRC = $(TARGET).c hd44780.c
 
 
 # List C++ source files here. (C dependencies are automatically generated.)
